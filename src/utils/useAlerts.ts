@@ -32,7 +32,7 @@ const randomErrors: ({ type: Alert['type'], message: string } | (() => { type: A
   { type: 'warning', message: 'System does not support ternary operations. It could impact calculation accuracy.' },
   { type: 'warning', message: 'Hardware acceleration for 4D rendering could not be found. Some functions might be unavailable.' },
   { type: 'error', message: 'Failed to reboot system.' },
-  { type: 'warning', message: 'System has a finite amount of RAM. Some mathematical problems cannot be solved.' }
+  { type: 'warning', message: 'System has a finite amount of RAM. Some mathematical problems can not be solved.' }
 ]
 export async function generateRandomError() {
   const alerts = useAlertsStore()
