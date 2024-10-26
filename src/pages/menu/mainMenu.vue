@@ -1,22 +1,38 @@
 <template>
   <div class="flex flex-col items-center mt-60 w-full">
     <div class="flex flex-col gap-2">
-      <div class="flex gap-1 w-64">
-        <div
-          v-for="(breadCrum, index) in bread"
-          :key="breadCrum.path"
-          class="flex gap-1"
+      <div class="w-64 flex justify-between">
+        <Transition name="backBtn">
+          <RouterLink
+            v-show="!isRoot"
+            to="/"
+            class="text-cente py-1 -my-1 px-3 -mx-3"
+          >
+            &lt;
+          </RouterLink>
+        </Transition>
+        <TransitionGroup
+          name="breadItems"
+          tag="div"
+          class="flex gap-1 ml-auto"
         >
-          <div>
-            {{ breadCrum.name }}
+          <div
+            v-for="(breadCrum, index) in bread"
+            :key="breadCrum.path"
+            class="flex gap-1"
+          >
+            <div>
+              {{ breadCrum.name }}
+            </div>
+            <div v-if="index + 1 < bread.length">
+              /
+            </div>
           </div>
-          <div v-if="index + 1 < bread.length">
-            /
-          </div>
-        </div>
+        </transitiongroup>
       </div>
+
       <TransitionGroup
-        name="list"
+        name="menuItems"
         tag="nav"
         class="flex flex-col gap-3 my-2"
       >
@@ -45,11 +61,13 @@ const currRoute = useRoute()
 const router = useRouter()
 const routes = router.getRoutes()
 
+const isRoot = computed(() => currRoute.path === '/')
+
 const doNotShow = ['NotFound', 'Menu']
 const filteredRoutes = computed(() =>
   routes.filter(route =>
     !doNotShow.includes(route.name?.toString() ?? '') &&
-    new RegExp(`^${currRoute.path === '/' ? '' : currRoute.path}/[a-zA-Z-]+$`).test(route.path)
+    new RegExp(`^${isRoot.value  ? '' : currRoute.path}/[a-zA-Z-]+$`).test(route.path)
   )
 )
 
@@ -64,14 +82,14 @@ const bread = computed(() => {
 </script>
 
 <style scoped>
-.list-move, /* apply transition to moving elements */
-.list-enter-active,
-.list-leave-active {
+.menuItems-move, /* apply transition to moving elements */
+.menuItems-enter-active,
+.menuItems-leave-active {
   transition: all 0.5s ease;
 }
 
-.list-enter-from,
-.list-leave-to {
+.menuItems-enter-from,
+.menuItems-leave-to {
   opacity: 0;
   filter: grayscale(100%);
   transform: translateX(30px);
@@ -79,7 +97,37 @@ const bread = computed(() => {
 
 /* ensure leaving items are taken out of layout flow so that moving
    animations can be calculated correctly. */
-.list-leave-active {
+.menuItems-leave-active {
+  position: absolute;
+}
+
+.backBtn-move, /* apply transition to moving elements */
+.backBtn-enter-active,
+.backBtn-leave-active {
+  transition: all 0.5s ease;
+}
+
+.backBtn-enter-from,
+.backBtn-leave-to {
+  opacity: 0;
+}
+
+.breadItems-move, /* apply transition to moving elements */
+.breadItems-enter-active,
+.breadItems-leave-active {
+  transition: all 0.5s ease;
+}
+
+.breadItems-enter-from,
+.breadItems-leave-to {
+  opacity: 0;
+  filter: grayscale(100%);
+  transform: translateX(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.breadItems-leave-active {
   position: absolute;
 }
 </style>
