@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import NotFound from '@/pages/notFound/notFound.vue'
-import Starter from '@/pages/menu/menu.vue'
+import Starter from '@/pages/menu/mainMenu.vue'
 
 export const routes: RouteRecordRaw[] = [
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
