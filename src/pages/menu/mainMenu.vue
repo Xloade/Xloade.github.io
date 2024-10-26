@@ -1,24 +1,85 @@
 <template>
-  <div class="flex items-center justify-center w-full h-screen">
-    <nav class="p-2 flex flex-col gap-2 m-2">
-      <div
-        v-for="route in filteredRoutes"
-        :key="route.path"
-      >
-        <RouterLink
-          :to="route.path"
-          class="text-lg w-52 text-center bg-cyan-950 transition-transform hover:translate-x-2"
+  <div class="flex flex-col items-center mt-60 w-full">
+    <div class="flex flex-col gap-2">
+      <div class="flex gap-1 w-64">
+        <div
+          v-for="(breadCrum, index) in bread"
+          :key="breadCrum.path"
+          class="flex gap-1"
         >
-          {{ route.name }}
-        </RouterLink>
+          <div>
+            {{ breadCrum.name }}
+          </div>
+          <div v-if="index + 1 < bread.length">
+            /
+          </div>
+        </div>
       </div>
-    </nav>
+      <TransitionGroup
+        name="list"
+        tag="nav"
+        class="flex flex-col gap-3 my-2"
+      >
+        <div
+          v-for="route in filteredRoutes"
+          :key="route.path"
+          class="w-64 flex bg-orange-600"
+        >
+          <RouterLink
+            :to="{name: route.name}"
+            class="p-2 text-lg w-full text-center bg-cyan-950 transition-transform hover:translate-x-1 hover:translate-y-1 shadow-sm"
+          >
+            {{ route.name }}
+          </RouterLink>
+        </div>
+      </TransitionGroup>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { routes } from '@/core/router'
+import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
+const currRoute = useRoute()
+const router = useRouter()
+const routes = router.getRoutes()
 
 const doNotShow = ['NotFound', 'Menu']
-const filteredRoutes = routes.filter(route => !doNotShow.includes(route.name?.toString() ?? ''))
+const filteredRoutes = computed(() =>
+  routes.filter(route =>
+    !doNotShow.includes(route.name?.toString() ?? '') &&
+    new RegExp(`^${currRoute.path === '/' ? '' : currRoute.path}/[a-zA-Z-]+$`).test(route.path)
+  )
+)
+
+const bread = computed(() => {
+  const parts = currRoute.path.split('/').filter(e => e)
+  return parts.reduce((acc, curr) => {
+    acc.builder += curr
+    acc.paths.push(routes.find(e => e.path === acc.builder)!)
+    return acc
+  },{builder: '/', paths:[routes.find(e => e.path === '/')!]}).paths
+})
 </script>
+
+<style scoped>
+.list-move, /* apply transition to moving elements */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  filter: grayscale(100%);
+  transform: translateX(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.list-leave-active {
+  position: absolute;
+}
+</style>

@@ -1,12 +1,27 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import NotFound from '@/pages/notFound/notFound.vue'
-import Starter from '@/pages/menu/mainMenu.vue'
+import TodoPage from '@/pages/todoPage.vue'
+import MainMenu from '@/pages/menu/mainMenu.vue'
 
 export const routes: RouteRecordRaw[] = [
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
-    { path: '/', name: 'Menu', component: Starter },
-    { path: '/aaa', name: 'aaaa', component: Starter },
-    { path: '/bbb', name: 'bbb', component: Starter },
+    {
+        path: '/', name: 'Menu', component: MainMenu,
+    },
+    {
+        path: '/experiments',
+        children: [
+            { path: '', component: MainMenu, name: 'Experiments' },
+            { path: 'file-chomper', name: 'File Chomper', component: TodoPage }
+        ]
+    },
+    {
+        path: '/tools',
+        children: [
+            { path:'', name: 'Tools', component: MainMenu },
+            { path: 'notepad', name: 'Notepad', component: TodoPage },
+        ]
+    }
 ]
 
 export function useCreateRouter() {
